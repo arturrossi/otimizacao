@@ -1,5 +1,6 @@
 from re import T
 import sys
+import time
 from solucao import Solucao
 from tabu import Tabu
 
@@ -40,4 +41,6 @@ def busca_tabu():
 	print(melhor_objetivo) 
 
 if __name__ == '__main__':
+	start_time = time.time()
 	busca_tabu()
+	print("--- %s seconds ---" % (time.time() - start_time))

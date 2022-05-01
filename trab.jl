@@ -4,7 +4,7 @@ using DelimitedFiles
 
 #ARRAY EM JULIA COMECA NO INDICE 1 :)
 
-instancia = readdlm("instancias-problema2/instance_16.dat", ' ')
+instancia = readdlm("instancias-problema2/instance_29.dat", ' ')
 
 M = 1000 #constante
 
@@ -18,6 +18,9 @@ demandas = instancia[n+2, 1:n] #D(v) demanda
 limites = instancia[n+3, 1:n]  #L(v) limite
 
 model = Model(GLPK.Optimizer)
+
+#seta um tempo limite
+set_time_limit_sec(model, 900.0)
 
 #Xij, 1 se aresta ij faz parte da solucao
 @variable(model, x[1:n, 1:n], Bin)
@@ -56,11 +59,15 @@ c_initial[1] = sum(demandas[1:n])
 #carga maxima (carga c tem que ser no maximo l)
 @constraint(model, carga_max[v=1:n], limites[v] >= cargas[v])
 
-# print(model)
+@time begin
+    optimize!(model)
+end
 
-optimize!(model)
-
-if termination_status(model) == MOI.OPTIMAL
+if termination_status(model) == MOI.TIME_LIMIT
+    println("Limite de tempo")
+    @show objective_value(model)
+    @show value.(x)
+elseif termination_status(model) == MOI.OPTIMAL
     println("Solução ótima encontrada")
     @show objective_value(model)
     @show value.(x)
