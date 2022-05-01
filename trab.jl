@@ -4,7 +4,7 @@ using DelimitedFiles
 
 #ARRAY EM JULIA COMECA NO INDICE 1 :)
 
-instancia = readdlm("instancias-problema2/instance_21.dat", ' ')
+instancia = readdlm("instancias-problema2/instance_16.dat", ' ')
 
 M = 1000 #constante
 
