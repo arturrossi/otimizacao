@@ -9,7 +9,7 @@ instancia = readdlm("instancias-problema2/instance_16.dat", ' ')
 M = 1000 #constante
 
 n = instancia[1] #numero de vertices
-S = (2^n) - 2 #numero subconjuntos que nao sao vazios nem V
+S = (2^n) - 2 #numero subconjuntos que nao sao vazios nem V0
 
 distancias = instancia[2:n+1, 1:n] #distancias
 
@@ -32,14 +32,13 @@ c_initial[1] = sum(demandas[1:n])
 
 #RESTRICOES
 
-#retirar subciclos
-@constraint(model, sub[i=1:n, j=1:n], sum(x[i, j]) <= S - 1)
-
-@constraint(model, self[i=1:n], sum(x[i, i]) == 0)
-
 #restricao de grau 2 (exatamente uma aresta entrando e exatamente uma aresta saindo do vertice)
-@constraint(model, entrando[i=1:n], sum(x[i, 1:n]) == 1)
-@constraint(model, saindo[j=1:n], sum(x[1:n, j]) == 1)
+@constraint(model, entrando[i=1:n], sum(x[i, j] for j in 1:n) == 1)
+@constraint(model, saindo[i=1:n], sum(x[j, i] for j in 1:n) == 1)
+
+#retirar subciclos
+@constraint(model, sub, sum(x[i, j] for i in 1:n, j in 1:n) <= S - 1)
+@constraint(model, self, sum(x[i, i] for i in 1:n) == 0)
 
 #suprir a demanda dos clientes
 @constraint(model, sum(demandas) == cargas[1])
@@ -47,12 +46,12 @@ c_initial[1] = sum(demandas[1:n])
 #se aresta está na solução, 
 #somatorio das cargas restantes tem que ser no máximo igual a carga
 #nos outros vértices
-# @constraint(model, restante[i=1:n, v=2:n], sum(cargas[i] - demandas[i]) <= cargas[v] + M * (1 - x[i, v]))
+@constraint(model, restante[i=1:n, v=2:n], cargas[i] - demandas[i] <= cargas[v] + M * (1 - x[i, v]))
 
 #se aresta não está na solução, 
 #somatorio das cargas restantes tem que ser no menor que a carga
 # nos outros vértices
-# @constraint(model, restante2[i=1:n, v=2:n], sum(cargas[i] - demandas[i]) >= cargas[v] + M * (1 - x[i, v]))
+@constraint(model, restante2[i=1:n, v=2:n], cargas[i] - demandas[i] + M * (1 - x[i, v]) >= cargas[v])
 
 #carga maxima (carga c tem que ser no maximo l)
 @constraint(model, carga_max[v=1:n], limites[v] >= cargas[v])
