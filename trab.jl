@@ -4,12 +4,12 @@ using DelimitedFiles
 
 #ARRAY EM JULIA COMECA NO INDICE 1 :)
 
-instancia = readdlm("instancias-problema2/instance_29.dat", ' ')
+instancia = readdlm("instancias-problema2/instance_16.dat", ' ')
 
 M = 1000 #constante
 
 n = instancia[1] #numero de vertices
-S = (2^n) - 2 #numero subconjuntos que nao sao vazios nem V0
+S = (BigInt(2)^n) - 2 #numero subconjuntos que nao sao vazios nem V0
 
 distancias = instancia[2:n+1, 1:n] #distancias
 
